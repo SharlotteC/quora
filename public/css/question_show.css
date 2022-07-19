@@ -1,0 +1,12 @@
+.question-tag{
+    background: var(--primary);
+    color: var(--color-primary);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semi-bold);
+    border-radius: var(--border-radius);
+    padding: 20px 10px;
+}
+.question-text{
+    line-height: 30px;
+    white-space: pre-wrap;
+}
