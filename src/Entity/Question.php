@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
 class Question
 {
@@ -18,13 +17,21 @@ class Question
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message: "Veuillez donner un titre a votre question")]
-    #[Assert\Length(min:5, minMessage: "Votre titre dois faire au minimum 5 caractères", max: 255, maxMessage: "Votre titre est trop long")]
+    #[Assert\NotBlank(message: "Veuillez donner un titre à votre question")]
+    #[Assert\Length(
+        min: 5, 
+        minMessage: "Votre titre doit faire au minimum 5 caracteres",
+        max: 255,
+        maxMessage: "Votre titre est trop long."
+    )]
     private $title;
 
     #[ORM\Column(type: 'text')]
-    #[Assert\NotBlank(message: "Votre détaillez votre question")]
-    #[Assert\Length(min:5, minMessage: "Votre Question est trop courte")]
+    #[Assert\NotBlank(message: "Veuillez detailler votre question")]
+    #[Assert\Length(
+        min: 5, 
+        minMessage: "Votre question est trop courte",
+    )]
     private $content;
 
     #[ORM\Column(type: 'datetime_immutable')]
@@ -36,11 +43,17 @@ class Question
     #[ORM\Column(type: 'integer')]
     private $nbResponse;
 
+    #[ORM\OneToMany(mappedBy: 'question', targetEntity: Comment::class, orphanRemoval: true)]
+    private $comments;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'questions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $author;
 
-
-
-
+    public function __construct()
+    {
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -107,6 +120,45 @@ class Question
         return $this;
     }
 
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
 
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setQuestion($this);
+        }
 
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getQuestion() === $this) {
+                $comment->setQuestion(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
 }

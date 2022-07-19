@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-
+use App\Entity\Comment;
 use App\Entity\Question;
-
+use App\Form\CommentType;
 use App\Form\QuestionType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
